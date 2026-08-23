@@ -54,17 +54,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// 7. Connexion au client Redis pour le cache et les compteurs
-const redisClient = createRedisClient();
-
-// 8. Création du serveur HTTP natif à partir de l'instance Express (Requis pour WebSockets)
-const server = http.createServer(app);
-
-// 9. Initialisation du serveur WebSockets (Socket.io)
-const io = initSocket(server);
-
-// 10. Enregistrement des gestionnaires d'événements de chat en temps réel sur Socket.io
-registerChatSocketHandlers(io);
+// 7. (WebSockets, Redis et Serveur HTTP sont initialisés ci-dessous uniquement en mode local/standalone)
 
 // ============================================================================
 // 🔒 CHAÎNE DE MIDDLEWARES DE SÉCURITÉ ET OPTIMISATION
@@ -155,6 +145,11 @@ app.use((err, req, res, next) => {
 
 // Importation du script d'ensemencement (.env)
 if (!process.env.VERCEL) {
+  const redisClient = createRedisClient();
+  const server = http.createServer(app);
+  const io = initSocket(server);
+  registerChatSocketHandlers(io);
+
   const PORT = process.env.PORT || 5000;
   server.listen(PORT, async () => {
     console.log(`🚀 Serveur Backend 2 démarré sur le port ${PORT}`);
