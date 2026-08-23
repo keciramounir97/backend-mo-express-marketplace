@@ -26,9 +26,8 @@ const connectDB = async () => {
   const mongoURI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/aliexpress_clone_db";
 
   cachedPromise = mongoose.connect(mongoURI, {
-    bufferCommands: false,
-    connectTimeoutMS: 10000,
-    serverSelectionTimeoutMS: 5000,
+    connectTimeoutMS: 3000,
+    serverSelectionTimeoutMS: 2000,
   }).then((conn) => {
     console.log(`✅ Base de données MongoDB connectée avec succès sur l'hôte : ${conn.connection.host}`);
     return conn;

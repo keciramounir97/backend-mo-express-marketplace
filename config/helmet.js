@@ -23,7 +23,7 @@ export const helmetMiddleware = helmet({
   // Anti-Clickjacking : Interdit l'intégration dans des iFrames externes
   frameguard: { action: "deny" },
   // Cache la technologie utilisée (Remplace X-Powered-By)
-  hidePoweredBy: { setTo: "Express Server" },
+  hidePoweredBy: true,
   // HTTP Strict Transport Security (HSTS) : Impose HTTPS pendant 1 an
   hsts: { maxAge: 31536000, includeSubDomains: true },
   // Empêche le navigateur de deviner le type MIME

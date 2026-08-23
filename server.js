@@ -46,8 +46,11 @@ import aiRoutes from "./ai/ai.routes.js";
 const app = express();
 
 // 6. Connexion à la base de données MongoDB (asynchrone avec mise en cache)
-app.use(async (req, res, next) => {
-  await connectDB();
+app.use((req, res, next) => {
+  if (req.path === "/" || req.path === "/favicon.ico") {
+    return next();
+  }
+  connectDB().catch(() => {});
   next();
 });
 
