@@ -45,9 +45,19 @@ import aiRoutes from "./ai/ai.routes.js";
 // 5. Initialisation de l'application Express
 const app = express();
 
+// Activer trust proxy pour Vercel / Reverse Proxy (Requis pour Rate Limiting & IPs)
+app.set("trust proxy", 1);
+
 // 6. Connexion à la base de données MongoDB (asynchrone avec mise en cache)
 app.use((req, res, next) => {
-  if (req.path === "/" || req.path === "/favicon.ico") {
+  if (
+    req.path === "/" ||
+    req.path === "/api" ||
+    req.path === "/api/index" ||
+    req.path === "/api/index.js" ||
+    req.path === "/favicon.ico" ||
+    req.path === "/api/favicon.ico"
+  ) {
     return next();
   }
   connectDB().catch(() => {});
@@ -111,10 +121,10 @@ app.use("/api/v1/payments", paymentRoutes);
 app.use("/api/v1/ai", aiRoutes);
 
 // Route favicon pour éviter les requêtes 404 de favicon dans les logs
-app.get("/favicon.ico", (req, res) => res.status(204).end());
+app.get(["/favicon.ico", "/api/favicon.ico"], (req, res) => res.status(204).end());
 
 // Route racine d'accueil et de test d'état du serveur (Healthcheck)
-app.get("/", (req, res) => {
+app.get(["/", "/api", "/api/index", "/api/index.js"], (req, res) => {
   res.json({
     status: "online",
     message: "🚀 Serveur Backend 2 (AliExpress Clone) est opérationnel !",
