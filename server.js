@@ -45,8 +45,11 @@ import aiRoutes from "./ai/ai.routes.js";
 // 5. Initialisation de l'application Express
 const app = express();
 
-// 6. Connexion à la base de données MongoDB
-connectDB();
+// 6. Connexion à la base de données MongoDB (asynchrone avec mise en cache)
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
 
 // 7. Connexion au client Redis pour le cache et les compteurs
 const redisClient = createRedisClient();
@@ -145,14 +148,18 @@ app.use((err, req, res, next) => {
 // ============================================================================
 
 // Importation du script d'ensemencement (.env)
-import { seedDatabase } from "./config/seed.js";
-
-const PORT = process.env.PORT || 5000;
-
-server.listen(PORT, () => {
-  console.log(`🚀 Serveur Backend 2 démarré sur le port ${PORT}`);
-  console.log(`⚡ WebSockets (Socket.io) écoute sur ws://localhost:${PORT}`);
-  seedDatabase().catch((err) => console.log("Seeding deferred:", err.message));
-});
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 5000;
+  server.listen(PORT, async () => {
+    console.log(`🚀 Serveur Backend 2 démarré sur le port ${PORT}`);
+    console.log(`⚡ WebSockets (Socket.io) écoute sur ws://localhost:${PORT}`);
+    try {
+      const { seedDatabase } = await import("./config/seed.js");
+      seedDatabase().catch((err) => console.log("Seeding deferred:", err.message));
+    } catch (err) {
+      console.log("Seeding import deferred:", err.message);
+    }
+  });
+}
 
 export default app;
