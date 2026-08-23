@@ -117,6 +117,9 @@ app.use("/api/v1/disputes", disputeRoutes);
 app.use("/api/v1/payments", paymentRoutes);
 app.use("/api/v1/ai", aiRoutes);
 
+// Route favicon pour éviter les requêtes 404 de favicon dans les logs
+app.get("/favicon.ico", (req, res) => res.status(204).end());
+
 // Route racine d'accueil et de test d'état du serveur (Healthcheck)
 app.get("/", (req, res) => {
   res.json({
