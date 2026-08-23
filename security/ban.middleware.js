@@ -3,12 +3,18 @@
 // RÔLE : Middleware Express interceptant et bloquant les adresses IP ou Email bannies
 // ============================================================================
 
+import mongoose from "mongoose";
 import Ban from "./ban.model.js";
 
 /**
  * Middleware de sécurité vérifiant si l'adresse IP cliente ou l'email connecté est banni
  */
 export const checkBannedMiddleware = async (req, res, next) => {
+  // Si MongoDB n'est pas connecté, ne pas bloquer ni temporiser la requête
+  if (mongoose.connection.readyState !== 1) {
+    return next();
+  }
+
   try {
     // Récupère l'IP du client
     const clientIp = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "").split(",")[0].trim();
